@@ -1,0 +1,24 @@
+# OS files
+.DS_Store
+Thumbs.db
+
+# Environment variables
+.env
+*.env.local
+
+# IDEs
+.idea/
+.vscode/
+*.iml
+
+# Node / Svelte / Frontend
+node_modules/
+dist/
+.svelte-kit/
+build/
+
+# Kotlin / Java / Gradle
+.gradle/
+out/
+*.class
+*.jar
