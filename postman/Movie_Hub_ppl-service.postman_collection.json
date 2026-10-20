@@ -1,0 +1,196 @@
+{
+  "info": {
+    "_postman_id": "7b8e5d32-4e92-4f11-9a1a-3e817a0b5c90",
+    "name": "Movie Hub - People Service (ppl-service)",
+    "description": "Postman Collection for testing the Movie Hub `ppl-service` via GraphQL (HTTP port 8082) and gRPC (port 9090).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8082",
+      "type": "string"
+    },
+    {
+      "key": "grpc_url",
+      "value": "localhost:9090",
+      "type": "string"
+    },
+    {
+      "key": "sample_actor_id",
+      "value": "e1a1c902-6e27-4c7b-b8df-9111c1000001",
+      "type": "string"
+    },
+    {
+      "key": "sample_director_id",
+      "value": "f7a7c568-2e8d-4c31-94de-9777c7000007",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. GraphQL Queries & Mutations (HTTP :8082)",
+      "description": "GraphQL requests dispatched to `http://localhost:8082/graphql`.",
+      "item": [
+        {
+          "name": "Query - Get All People",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetAllPeople {\n  people {\n    id\n    name\n    role\n  }\n}",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Retrieves all people records from ppl_db."
+          },
+          "response": []
+        },
+        {
+          "name": "Query - Get Person by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetPersonById($id: ID!) {\n  person(id: $id) {\n    id\n    name\n    role\n  }\n}",
+                "variables": "{\n  \"id\": \"{{sample_actor_id}}\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Retrieves a single person by their UUID."
+          },
+          "response": []
+        },
+        {
+          "name": "Mutation - Create Person",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreatePerson($name: String!, $role: String!) {\n  createPerson(name: $name, role: $role) {\n    id\n    name\n    role\n  }\n}",
+                "variables": "{\n  \"name\": \"Tom Hardy\",\n  \"role\": \"ACTOR\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Creates and persists a new person entity in ppl_db."
+          },
+          "response": []
+        },
+        {
+          "name": "Mutation - Delete Person",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation DeletePerson($id: ID!) {\n  deletePerson(id: $id)\n}",
+                "variables": "{\n  \"id\": \"{{sample_actor_id}}\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Deletes a person by UUID, returning true if found and removed."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. gRPC Payloads & Method Reference (Port :9090)",
+      "description": "Reference payloads for Postman's native gRPC request feature connecting to `localhost:9090` using `backend/grpc-proto/src/main/proto/person.proto`.",
+      "item": [
+        {
+          "name": "gRPC - GetPeopleByIds (Bulk Lookup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ids\": [\n    \"e1a1c902-6e27-4c7b-b8df-9111c1000001\",\n    \"f7a7c568-2e8d-4c31-94de-9777c7000007\"\n  ]\n}"
+            },
+            "url": {
+              "raw": "grpc://{{grpc_url}}/person.PersonService/GetPeopleByIds",
+              "protocol": "grpc",
+              "host": ["{{grpc_url}}"],
+              "path": ["person.PersonService", "GetPeopleByIds"]
+            },
+            "description": "Method: person.PersonService/GetPeopleByIds\nProto: backend/grpc-proto/src/main/proto/person.proto"
+          },
+          "response": []
+        },
+        {
+          "name": "gRPC - GetPersonById (Single Lookup)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": \"e1a1c902-6e27-4c7b-b8df-9111c1000001\"\n}"
+            },
+            "url": {
+              "raw": "grpc://{{grpc_url}}/person.PersonService/GetPersonById",
+              "protocol": "grpc",
+              "host": ["{{grpc_url}}"],
+              "path": ["person.PersonService", "GetPersonById"]
+            },
+            "description": "Method: person.PersonService/GetPersonById\nProto: backend/grpc-proto/src/main/proto/person.proto"
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}
