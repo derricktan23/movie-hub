@@ -1,0 +1,25 @@
+server:
+  port: 8082
+
+grpc:
+  server:
+    port: 9090
+
+spring:
+  application:
+    name: ppl-service
+  graphql:
+    graphiql:
+      enabled: true
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/ppl_db
+    username: ${DB_USER:postgres}
+    password: ${DB_PASSWORD:postgresPassword}
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true

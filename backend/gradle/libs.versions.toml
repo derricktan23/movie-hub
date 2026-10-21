@@ -1,0 +1,29 @@
+[versions]
+kotlin = "2.4.20"
+kotlinxDatetime = "0.8.0"
+kotlinxSerializationJSON = "1.11.0"
+kotlinxCoroutines = "1.10.2"
+springBoot = "3.4.2"
+springDependencyManagement = "1.1.7"
+grpcSpringBootStarter = "3.1.0.RELEASE"
+postgresql = "42.7.5"
+
+[libraries]
+kotlinGradlePlugin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+kotlinxSerialization = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJSON" }
+kotlinxCoroutines = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
+grpcSpringBootStarter = { module = "net.devh:grpc-server-spring-boot-starter", version.ref = "grpcSpringBootStarter" }
+grpcClientSpringBootStarter = { module = "net.devh:grpc-client-spring-boot-starter", version.ref = "grpcSpringBootStarter" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
+
+[bundles]
+kotlinxEcosystem = ["kotlinxDatetime", "kotlinxSerialization", "kotlinxCoroutines"]
+
+[plugins]
+kotlinPluginSerialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kotlinSpring = { id = "org.jetbrains.kotlin.plugin.spring", version.ref = "kotlin" }
+kotlinJpa = { id = "org.jetbrains.kotlin.plugin.jpa", version.ref = "kotlin" }
+springBoot = { id = "org.springframework.boot", version.ref = "springBoot" }
+springDependencyManagement = { id = "io.spring.dependency-management", version.ref = "springDependencyManagement" }

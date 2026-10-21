@@ -1,0 +1,29 @@
+syntax = "proto3";
+
+package person;
+
+option java_multiple_files = true;
+option java_package = "com.moviehub.grpc.person";
+
+service PersonService {
+  rpc GetPeopleByIds (GetPeopleByIdsRequest) returns (GetPeopleByIdsResponse);
+  rpc GetPersonById (GetPersonByIdRequest) returns (PersonResponse);
+}
+
+message GetPeopleByIdsRequest {
+  repeated string ids = 1;
+}
+
+message GetPeopleByIdsResponse {
+  repeated PersonResponse people = 1;
+}
+
+message GetPersonByIdRequest {
+  string id = 1;
+}
+
+message PersonResponse {
+  string id = 1;
+  string name = 2;
+  string role = 3;
+}
