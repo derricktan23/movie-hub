@@ -26,7 +26,7 @@ class PersonService(
      */
     fun findAllByIds(ids: List<UUID>): List<Person> {
         if (ids.isEmpty()) return emptyList()
-        return personRepository.findAllByIdIn(ids)
+        return personRepository.findAllById(ids)
     }
 
     /**

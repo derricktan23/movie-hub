@@ -6,6 +6,4 @@ import org.springframework.stereotype.Repository
 import java.util.UUID
 
 @Repository
-interface PersonRepository : JpaRepository<Person, UUID> {
-    fun findAllByIdIn(ids: Collection<UUID>): List<Person>
-}
+interface PersonRepository : JpaRepository<Person, UUID>

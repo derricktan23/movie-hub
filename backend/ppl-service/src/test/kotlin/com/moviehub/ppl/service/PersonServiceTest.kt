@@ -73,12 +73,13 @@ class PersonServiceTest {
             Person(id1, "Leonardo DiCaprio", "ACTOR"),
             Person(id2, "Christopher Nolan", "DIRECTOR")
         )
-        `when`(personRepository.findAllByIdIn(listOf(id1, id2))).thenReturn(people)
+        `when`(personRepository.findAllById(listOf(id1, id2))).thenReturn(people)
 
         val result = personService.findAllByIds(listOf(id1, id2))
 
         assertEquals(2, result.size)
         assertEquals(listOf("Leonardo DiCaprio", "Christopher Nolan"), result.map { it.name })
+        verify(personRepository).findAllById(listOf(id1, id2))
     }
 
     @Test
