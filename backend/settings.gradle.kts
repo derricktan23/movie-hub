@@ -16,6 +16,4 @@ rootProject.name = "backend"
 
 include("grpc-proto")
 include("ppl-service")
-if (file("movie-service").exists()) {
-    include("movie-service")
-}
+include("movie-service")
