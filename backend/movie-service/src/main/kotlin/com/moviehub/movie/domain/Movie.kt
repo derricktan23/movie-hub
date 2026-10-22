@@ -33,12 +33,17 @@ class Movie(
 
     @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(
-        name = "movie_cast",
+        name = "movie_people",
         joinColumns = [JoinColumn(name = "movie_id")]
     )
-    @Column(name = "cast_id")
-    var castIds: MutableSet<UUID> = mutableSetOf()
+    @Column(name = "ppl_id")
+    var pplIds: MutableSet<UUID> = mutableSetOf()
 ) {
+    var castIds: MutableSet<UUID>
+        get() = pplIds
+        set(value) {
+            pplIds = value
+        }
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         if (other !is Movie) return false
@@ -48,5 +53,5 @@ class Movie(
     override fun hashCode(): Int = id?.hashCode() ?: 0
 
     override fun toString(): String =
-        "Movie(id=$id, title='$title', releaseYear=$releaseYear, artworkUrl=$artworkUrl, castIds=$castIds)"
+        "Movie(id=$id, title='$title', releaseYear=$releaseYear, artworkUrl=$artworkUrl, pplIds=$pplIds)"
 }

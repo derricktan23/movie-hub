@@ -19,14 +19,14 @@ class MovieRepositoryTest {
     private lateinit var movieRepository: MovieRepository
 
     @Test
-    fun `save and findById works with castIds`() {
-        val castId1 = UUID.randomUUID()
-        val castId2 = UUID.randomUUID()
+    fun `save and findById works with pplIds`() {
+        val pplId1 = UUID.randomUUID()
+        val pplId2 = UUID.randomUUID()
         val movie = Movie(
             title = "Dune: Part Two",
             artworkUrl = "https://example.com/dune2.jpg",
             releaseYear = 2024,
-            castIds = mutableSetOf(castId1, castId2)
+            pplIds = mutableSetOf(pplId1, pplId2)
         )
 
         val saved = movieRepository.save(movie)
@@ -37,9 +37,11 @@ class MovieRepositoryTest {
         assertEquals("Dune: Part Two", found?.title)
         assertEquals(2024, found?.releaseYear)
         assertEquals("https://example.com/dune2.jpg", found?.artworkUrl)
+        assertEquals(2, found?.pplIds?.size)
+        assertTrue(found?.pplIds?.contains(pplId1) == true)
+        assertTrue(found?.pplIds?.contains(pplId2) == true)
+        // Also verify castIds alias works
         assertEquals(2, found?.castIds?.size)
-        assertTrue(found?.castIds?.contains(castId1) == true)
-        assertTrue(found?.castIds?.contains(castId2) == true)
     }
 
     @Test
@@ -57,12 +59,12 @@ class MovieRepositoryTest {
 
     @Test
     fun `delete removes movie and its cast associations`() {
-        val castId = UUID.randomUUID()
+        val pplId = UUID.randomUUID()
         val movie = Movie(
             title = "Temporary Movie",
             artworkUrl = null,
             releaseYear = 2020,
-            castIds = mutableSetOf(castId)
+            pplIds = mutableSetOf(pplId)
         )
         val saved = movieRepository.save(movie)
         val id = saved.id!!

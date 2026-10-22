@@ -10,10 +10,10 @@ CREATE TABLE IF NOT EXISTS movies (
     release_year INT
 );
 
-CREATE TABLE IF NOT EXISTS movie_cast (
+CREATE TABLE IF NOT EXISTS movie_people (
     movie_id UUID NOT NULL REFERENCES movies(id) ON DELETE CASCADE,
-    cast_id UUID NOT NULL,
-    PRIMARY KEY (movie_id, cast_id)
+    ppl_id UUID NOT NULL,
+    PRIMARY KEY (movie_id, ppl_id)
 );
 
 -- ----------------------------------------------------------------------------
