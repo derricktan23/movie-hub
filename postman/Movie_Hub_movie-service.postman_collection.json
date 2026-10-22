@@ -1,0 +1,169 @@
+{
+  "info": {
+    "_postman_id": "8c9f6d43-5e03-4f22-a1b2-8a928a1c6e01",
+    "name": "Movie Hub - Movie Service (movie-service)",
+    "description": "Postman Collection for testing Movie Hub `movie-service` GraphQL endpoints (HTTP port 8081).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "base_url",
+      "value": "http://localhost:8081",
+      "type": "string"
+    },
+    {
+      "key": "sample_movie_id",
+      "value": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11",
+      "type": "string"
+    },
+    {
+      "key": "sample_person_id",
+      "value": "e1a1c902-6e27-4c7b-b8df-9111c1000001",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "1. GraphQL Queries (HTTP :8081)",
+      "description": "GraphQL query requests dispatched to `http://localhost:8081/graphql`.",
+      "item": [
+        {
+          "name": "Query - Get All Movies",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetAllMovies {\n  movies {\n    id\n    title\n    releaseYear\n    artworkUrl\n    pplIds\n  }\n}",
+                "variables": ""
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Retrieves all movies from movie_db."
+          },
+          "response": []
+        },
+        {
+          "name": "Query - Get Movie by ID",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetMovieById($id: ID!) {\n  movie(id: $id) {\n    id\n    title\n    releaseYear\n    artworkUrl\n    pplIds\n  }\n}",
+                "variables": "{\n  \"id\": \"{{sample_movie_id}}\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Retrieves a single movie by its UUID."
+          },
+          "response": []
+        },
+        {
+          "name": "Query - Get Movie With Resolved People Details (gRPC)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "query GetMovieWithPeople($id: ID!) {\n  movie(id: $id) {\n    id\n    title\n    releaseYear\n    artworkUrl\n    people {\n      id\n      name\n      role\n    }\n  }\n}",
+                "variables": "{\n  \"id\": \"{{sample_movie_id}}\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Retrieves a movie and its associated actors/creators resolved via gRPC from ppl-service."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "2. GraphQL Mutations (HTTP :8081)",
+      "description": "GraphQL mutation operations dispatched to `http://localhost:8081/graphql`.",
+      "item": [
+        {
+          "name": "Mutation - Create Movie",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation CreateMovie($title: String!, $releaseYear: Int, $artworkUrl: String, $pplIds: [ID!]) {\n  createMovie(title: $title, releaseYear: $releaseYear, artworkUrl: $artworkUrl, pplIds: $pplIds) {\n    id\n    title\n    releaseYear\n    artworkUrl\n    pplIds\n  }\n}",
+                "variables": "{\n  \"title\": \"Dunkirk\",\n  \"releaseYear\": 2017,\n  \"artworkUrl\": \"https://images.unsplash.com/photo-1518709268805-4e9042af9f23?w=800\",\n  \"pplIds\": [\n    \"f7a7c568-2e8d-4c31-94de-9777c7000007\",\n    \"e5e5a346-0c6b-4a1f-b2bc-9555a5000005\"\n  ]\n}"
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Creates and persists a new movie entity with associated person IDs in movie_db."
+          },
+          "response": []
+        },
+        {
+          "name": "Mutation - Delete Movie",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "graphql",
+              "graphql": {
+                "query": "mutation DeleteMovie($id: ID!) {\n  deleteMovie(id: $id)\n}",
+                "variables": "{\n  \"id\": \"{{sample_movie_id}}\"\n}"
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/graphql",
+              "host": ["{{base_url}}"],
+              "path": ["graphql"]
+            },
+            "description": "Deletes a movie record by its UUID, returning true if found and deleted."
+          },
+          "response": []
+        }
+      ]
+    }
+  ]
+}

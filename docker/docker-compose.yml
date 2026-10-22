@@ -27,12 +27,55 @@ services:
     container_name: movie-adminer
     restart: unless-stopped
     ports:
-      - "8081:8080"
+      - "${ADMINER_PORT:-8080}:8080"
     environment:
       ADMINER_DEFAULT_SERVER: postgres
     depends_on:
       postgres:
         condition: service_healthy
+    networks:
+      - movie-network
+
+  ppl-service:
+    build:
+      context: ../backend
+      dockerfile: ppl-service/Dockerfile
+    container_name: movie-ppl-service
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgresPassword}
+    ports:
+      - "8082:8082"
+      - "9090:9090"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - movie-network
+
+  movie-service:
+    build:
+      context: ../backend
+      dockerfile: movie-service/Dockerfile
+    container_name: movie-movie-service
+    restart: unless-stopped
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USER: ${POSTGRES_USER:-postgres}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgresPassword}
+      PPL_SERVICE_HOST: ppl-service
+      PPL_SERVICE_PORT: 9090
+    ports:
+      - "8081:8081"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      ppl-service:
+        condition: service_started
     networks:
       - movie-network
 
