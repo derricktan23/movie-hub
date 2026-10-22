@@ -15,7 +15,9 @@ dependencyResolutionManagement {
 rootProject.name = "backend"
 
 include("grpc-proto")
-include("ppl-service")
+if (file("ppl-service").exists()) {
+    include("ppl-service")
+}
 if (file("movie-service").exists()) {
     include("movie-service")
 }

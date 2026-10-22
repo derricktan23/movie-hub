@@ -32,7 +32,7 @@ INSERT INTO movies (id, title, release_year, artwork_url) VALUES
     ('d3eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', 'Oppenheimer', 2023, 'https://images.unsplash.com/photo-1440404653325-ab127d49abc1?w=800')
 ON CONFLICT (id) DO NOTHING;
 
-INSERT INTO movie_cast (movie_id, cast_id) VALUES
+INSERT INTO movie_people (movie_id, ppl_id) VALUES
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'e1a1c902-6e27-4c7b-b8df-9111c1000001'), -- Inception: Leonardo DiCaprio
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'e2b2d013-7f38-4d8c-89ef-9222d2000002'), -- Inception: Joseph Gordon-Levitt
     ('a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11', 'f7a7c568-2e8d-4c31-94de-9777c7000007'), -- Inception: Christopher Nolan
@@ -43,4 +43,4 @@ INSERT INTO movie_cast (movie_id, cast_id) VALUES
     ('c2eebc99-9c0b-4ef8-bb6d-6bb9bd380a33', 'f7a7c568-2e8d-4c31-94de-9777c7000007'), -- The Dark Knight: Christopher Nolan
     ('d3eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', 'e5e5a346-0c6b-4a1f-b2bc-9555a5000005'), -- Oppenheimer: Cillian Murphy
     ('d3eebc99-9c0b-4ef8-bb6d-6bb9bd380a44', 'f7a7c568-2e8d-4c31-94de-9777c7000007')  -- Oppenheimer: Christopher Nolan
-ON CONFLICT (movie_id, cast_id) DO NOTHING;
+ON CONFLICT (movie_id, ppl_id) DO NOTHING;
