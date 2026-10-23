@@ -66,4 +66,44 @@ class MovieGraphQlController(
         val uuid = runCatching { UUID.fromString(id) }.getOrNull() ?: return false
         return movieService.delete(uuid)
     }
+
+    /**
+     * Query all people via gRPC from ppl-service (BFF).
+     */
+    @QueryMapping
+    fun people(): List<PersonDto> = runBlocking {
+        personGrpcClient.getAllPeople()
+    }
+
+    /**
+     * Query a single person by UUID via gRPC from ppl-service (BFF).
+     */
+    @QueryMapping
+    fun person(@Argument id: String): PersonDto? {
+        val uuid = runCatching { UUID.fromString(id) }.getOrNull() ?: return null
+        return runBlocking {
+            personGrpcClient.getPersonById(uuid)
+        }
+    }
+
+    /**
+     * Create a person via gRPC in ppl-service (BFF).
+     */
+    @MutationMapping
+    fun createPerson(@Argument name: String, @Argument role: String): PersonDto {
+        return runBlocking {
+            personGrpcClient.createPerson(name, role)
+        } ?: throw IllegalArgumentException("Failed to create person via ppl-service")
+    }
+
+    /**
+     * Delete a person via gRPC in ppl-service (BFF).
+     */
+    @MutationMapping
+    fun deletePerson(@Argument id: String): Boolean {
+        val uuid = runCatching { UUID.fromString(id) }.getOrNull() ?: return false
+        return runBlocking {
+            personGrpcClient.deletePerson(uuid)
+        }
+    }
 }

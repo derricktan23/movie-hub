@@ -1,16 +1,12 @@
-server:
-  port: 8082
-
 grpc:
   server:
     port: 9090
 
 spring:
+  main:
+    web-application-type: none
   application:
     name: ppl-service
-  graphql:
-    graphiql:
-      enabled: true
   datasource:
     url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/ppl_db
     username: ${DB_USER:postgres}

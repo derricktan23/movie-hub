@@ -15,7 +15,6 @@ dependencies {
     implementation(platform("io.grpc:grpc-bom:1.63.0"))
 
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-graphql")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation(libs.grpcSpringBootStarter)
     implementation("org.jetbrains.kotlin:kotlin-reflect")

@@ -8,6 +8,24 @@ option java_package = "com.moviehub.grpc.person";
 service PersonService {
   rpc GetPeopleByIds (GetPeopleByIdsRequest) returns (GetPeopleByIdsResponse);
   rpc GetPersonById (GetPersonByIdRequest) returns (PersonResponse);
+  rpc GetAllPeople (GetAllPeopleRequest) returns (GetPeopleByIdsResponse);
+  rpc CreatePerson (CreatePersonRequest) returns (PersonResponse);
+  rpc DeletePerson (DeletePersonRequest) returns (DeletePersonResponse);
+}
+
+message GetAllPeopleRequest {}
+
+message CreatePersonRequest {
+  string name = 1;
+  string role = 2;
+}
+
+message DeletePersonRequest {
+  string id = 1;
+}
+
+message DeletePersonResponse {
+  bool success = 1;
 }
 
 message GetPeopleByIdsRequest {
@@ -27,3 +45,4 @@ message PersonResponse {
   string name = 2;
   string role = 3;
 }
+

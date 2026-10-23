@@ -121,4 +121,48 @@ class PersonGrpcServiceTest {
 
         assertEquals(Status.Code.INVALID_ARGUMENT, exception.status.code)
     }
+
+    @Test
+    fun `getAllPeople returns all people from service`() = runTest {
+        val id1 = UUID.randomUUID()
+        val people = listOf(Person(id1, "Tom Hardy", "ACTOR"))
+        `when`(personService.findAll()).thenReturn(people)
+
+        val response = personGrpcService.getAllPeople(com.moviehub.grpc.person.GetAllPeopleRequest.getDefaultInstance())
+
+        assertEquals(1, response.peopleCount)
+        assertEquals("Tom Hardy", response.getPeople(0).name)
+    }
+
+    @Test
+    fun `createPerson creates and returns person`() = runTest {
+        val id = UUID.randomUUID()
+        val created = Person(id, "Cillian Murphy", "ACTOR")
+        `when`(personService.create("Cillian Murphy", "ACTOR")).thenReturn(created)
+
+        val request = com.moviehub.grpc.person.CreatePersonRequest.newBuilder()
+            .setName("Cillian Murphy")
+            .setRole("ACTOR")
+            .build()
+
+        val response = personGrpcService.createPerson(request)
+
+        assertEquals("Cillian Murphy", response.name)
+        assertEquals("ACTOR", response.role)
+        assertEquals(id.toString(), response.id)
+    }
+
+    @Test
+    fun `deletePerson returns success status`() = runTest {
+        val id = UUID.randomUUID()
+        `when`(personService.delete(id)).thenReturn(true)
+
+        val request = com.moviehub.grpc.person.DeletePersonRequest.newBuilder()
+            .setId(id.toString())
+            .build()
+
+        val response = personGrpcService.deletePerson(request)
+
+        assertEquals(true, response.success)
+    }
 }

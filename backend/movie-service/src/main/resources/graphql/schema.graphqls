@@ -1,11 +1,15 @@
 type Query {
     movies: [Movie!]!
     movie(id: ID!): Movie
+    people: [Person!]!
+    person(id: ID!): Person
 }
 
 type Mutation {
     createMovie(title: String!, releaseYear: Int, artworkUrl: String, pplIds: [ID!]): Movie!
     deleteMovie(id: ID!): Boolean!
+    createPerson(name: String!, role: String!): Person!
+    deletePerson(id: ID!): Boolean!
 }
 
 type Movie {
