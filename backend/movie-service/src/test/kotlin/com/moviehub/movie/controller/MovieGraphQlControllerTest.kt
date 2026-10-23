@@ -98,4 +98,48 @@ class MovieGraphQlControllerTest {
 
         assertTrue(result)
     }
+
+    @Test
+    fun `people query delegates to personGrpcClient`() = runTest {
+        val person = PersonDto(UUID.randomUUID(), "Cillian Murphy", "ACTOR")
+        `when`(personGrpcClient.getAllPeople()).thenReturn(listOf(person))
+
+        val result = controller.people()
+
+        assertEquals(1, result.size)
+        assertEquals("Cillian Murphy", result[0].name)
+    }
+
+    @Test
+    fun `person query delegates to personGrpcClient`() = runTest {
+        val id = UUID.randomUUID()
+        val person = PersonDto(id, "Tom Hardy", "ACTOR")
+        `when`(personGrpcClient.getPersonById(id)).thenReturn(person)
+
+        val result = controller.person(id.toString())
+
+        assertNotNull(result)
+        assertEquals("Tom Hardy", result?.name)
+    }
+
+    @Test
+    fun `createPerson mutation delegates to personGrpcClient`() = runTest {
+        val id = UUID.randomUUID()
+        val created = PersonDto(id, "Emma Stone", "ACTOR")
+        `when`(personGrpcClient.createPerson("Emma Stone", "ACTOR")).thenReturn(created)
+
+        val result = controller.createPerson("Emma Stone", "ACTOR")
+
+        assertEquals("Emma Stone", result.name)
+    }
+
+    @Test
+    fun `deletePerson mutation delegates to personGrpcClient`() = runTest {
+        val id = UUID.randomUUID()
+        `when`(personGrpcClient.deletePerson(id)).thenReturn(true)
+
+        val result = controller.deletePerson(id.toString())
+
+        assertTrue(result)
+    }
 }

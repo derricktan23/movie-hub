@@ -164,4 +164,58 @@ class PersonGrpcClientTest {
 
         assertNull(result)
     }
+
+    @Test
+    fun `getAllPeople returns all people dtos on success`() = runTest {
+        val id = UUID.randomUUID()
+        val response = GetPeopleByIdsResponse.newBuilder()
+            .addPeople(
+                PersonResponse.newBuilder()
+                    .setId(id.toString())
+                    .setName("Tom Hardy")
+                    .setRole("ACTOR")
+                    .build()
+            )
+            .build()
+
+        whenever(stub.getAllPeople(any(), any())).thenReturn(response)
+
+        val result = client.getAllPeople()
+
+        assertEquals(1, result.size)
+        assertEquals(id, result[0].id)
+        assertEquals("Tom Hardy", result[0].name)
+    }
+
+    @Test
+    fun `createPerson returns created PersonDto`() = runTest {
+        val id = UUID.randomUUID()
+        val response = PersonResponse.newBuilder()
+            .setId(id.toString())
+            .setName("Cillian Murphy")
+            .setRole("ACTOR")
+            .build()
+
+        whenever(stub.createPerson(any(), any())).thenReturn(response)
+
+        val result = client.createPerson("Cillian Murphy", "ACTOR")
+
+        assertNotNull(result)
+        assertEquals(id, result?.id)
+        assertEquals("Cillian Murphy", result?.name)
+    }
+
+    @Test
+    fun `deletePerson returns success status`() = runTest {
+        val id = UUID.randomUUID()
+        val response = com.moviehub.grpc.person.DeletePersonResponse.newBuilder()
+            .setSuccess(true)
+            .build()
+
+        whenever(stub.deletePerson(any(), any())).thenReturn(response)
+
+        val result = client.deletePerson(id)
+
+        assertEquals(true, result)
+    }
 }

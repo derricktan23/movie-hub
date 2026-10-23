@@ -1,5 +1,8 @@
 package com.moviehub.movie.grpc
 
+import com.moviehub.grpc.person.CreatePersonRequest
+import com.moviehub.grpc.person.DeletePersonRequest
+import com.moviehub.grpc.person.GetAllPeopleRequest
 import com.moviehub.grpc.person.GetPeopleByIdsRequest
 import com.moviehub.grpc.person.GetPersonByIdRequest
 import com.moviehub.grpc.person.PersonResponse
@@ -19,6 +22,54 @@ class PersonGrpcClient(
     private val stub: PersonServiceGrpcKt.PersonServiceCoroutineStub
 ) {
     private val logger = LoggerFactory.getLogger(PersonGrpcClient::class.java)
+
+    /**
+     * Fetch all people from ppl-service.
+     */
+    suspend fun getAllPeople(): List<PersonDto> {
+        return try {
+            val response = stub.getAllPeople(GetAllPeopleRequest.getDefaultInstance())
+            response.peopleList.mapNotNull { it.toDto() }
+        } catch (e: Exception) {
+            logger.warn("Failed to retrieve all people from ppl-service: ${e.message}", e)
+            emptyList()
+        }
+    }
+
+    /**
+     * Create a new person record via ppl-service.
+     */
+    suspend fun createPerson(name: String, role: String): PersonDto? {
+        val request = CreatePersonRequest.newBuilder()
+            .setName(name)
+            .setRole(role)
+            .build()
+
+        return try {
+            val response = stub.createPerson(request)
+            response.toDto()
+        } catch (e: Exception) {
+            logger.warn("Failed to create person via ppl-service: ${e.message}", e)
+            null
+        }
+    }
+
+    /**
+     * Delete a person by UUID via ppl-service.
+     */
+    suspend fun deletePerson(id: UUID): Boolean {
+        val request = DeletePersonRequest.newBuilder()
+            .setId(id.toString())
+            .build()
+
+        return try {
+            val response = stub.deletePerson(request)
+            response.success
+        } catch (e: Exception) {
+            logger.warn("Failed to delete person $id via ppl-service: ${e.message}", e)
+            false
+        }
+    }
 
     /**
      * Bulk fetch people details by list of UUIDs.
