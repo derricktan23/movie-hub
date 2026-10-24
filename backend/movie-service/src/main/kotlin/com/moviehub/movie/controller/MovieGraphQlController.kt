@@ -4,6 +4,9 @@ import com.moviehub.movie.domain.Movie
 import com.moviehub.movie.dto.PersonDto
 import com.moviehub.movie.grpc.PersonGrpcClient
 import com.moviehub.movie.service.MovieService
+import com.moviehub.movie.tmdb.TmdbClient
+import com.moviehub.movie.tmdb.TmdbCreditsResult
+import com.moviehub.movie.tmdb.TmdbSearchResult
 import kotlinx.coroutines.runBlocking
 import org.springframework.graphql.data.method.annotation.Argument
 import org.springframework.graphql.data.method.annotation.MutationMapping
@@ -15,7 +18,8 @@ import java.util.UUID
 @Controller
 class MovieGraphQlController(
     private val movieService: MovieService,
-    private val personGrpcClient: PersonGrpcClient
+    private val personGrpcClient: PersonGrpcClient,
+    private val tmdbClient: TmdbClient
 ) {
     /**
      * Query all movies in movie_db.
@@ -74,6 +78,21 @@ class MovieGraphQlController(
     fun people(): List<PersonDto> = runBlocking {
         personGrpcClient.getAllPeople()
     }
+
+    /**
+     * Proxy TMDb movie search — returns up to 20 suggestions for the given query.
+     * The Bearer token is used server-side only; it is never forwarded to the client.
+     */
+    @QueryMapping
+    fun searchTmdbMovies(@Argument query: String): List<TmdbSearchResult> =
+        tmdbClient.searchMovies(query)
+
+    /**
+     * Fetch likely cast and key creators for a selected TMDb movie.
+     */
+    @QueryMapping
+    fun tmdbMovieCredits(@Argument tmdbId: String): TmdbCreditsResult =
+        tmdbClient.getMovieCredits(tmdbId)
 
     /**
      * Query a single person by UUID via gRPC from ppl-service (BFF).

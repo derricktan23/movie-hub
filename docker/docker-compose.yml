@@ -74,6 +74,7 @@ services:
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgresPassword}
       PPL_SERVICE_HOST: ppl-service
       PPL_SERVICE_PORT: 9090
+      TMDB_READ_ACCESS_TOKEN: ${TMDB_READ_ACCESS_TOKEN}
     ports:
       - "8081:8081"
     deploy:
@@ -84,6 +85,20 @@ services:
       postgres:
         condition: service_healthy
       ppl-service:
+        condition: service_started
+    networks:
+      - movie-network
+
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: movie-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      movie-service:
         condition: service_started
     networks:
       - movie-network

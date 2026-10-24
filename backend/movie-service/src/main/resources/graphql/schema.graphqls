@@ -3,6 +3,8 @@ type Query {
     movie(id: ID!): Movie
     people: [Person!]!
     person(id: ID!): Person
+    searchTmdbMovies(query: String!): [TmdbMovieSearchResult!]!
+    tmdbMovieCredits(tmdbId: ID!): TmdbCreditsResult!
 }
 
 type Mutation {
@@ -25,4 +27,32 @@ type Person {
     id: ID!
     name: String!
     role: String!
+}
+
+"""
+A movie result returned from the TMDb search API.
+posterUrl is pre-built: https://image.tmdb.org/t/p/w500{poster_path}
+"""
+type TmdbMovieSearchResult {
+    tmdbId: ID!
+    title: String!
+    releaseYear: Int
+    posterUrl: String
+    overview: String!
+}
+
+"""
+Likely cast and key creators returned from TMDb /movie/{id}/credits.
+"""
+type TmdbCreditsResult {
+    cast: [TmdbCreditPerson!]!
+    crew: [TmdbCreditPerson!]!
+}
+
+type TmdbCreditPerson {
+    id: ID!
+    name: String!
+    role: String!
+    characterOrJob: String
+    profileUrl: String
 }

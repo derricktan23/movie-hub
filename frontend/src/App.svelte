@@ -70,7 +70,7 @@
       {#if activeTab === 'movies' && $movieStore.error}
         <AlertBanner
           title="movie-service error"
-          message="{$movieStore.error}. Verify `movie-service` is running on port 8081."
+          message="{$movieStore.error}. Verify movie-service is running on port 8081."
           variant="danger"
           actionText="Retry"
           onAction={() => movieStore.load()}
