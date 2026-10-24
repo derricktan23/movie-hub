@@ -89,6 +89,20 @@ services:
     networks:
       - movie-network
 
+  frontend:
+    build:
+      context: ../frontend
+      dockerfile: Dockerfile
+    container_name: movie-frontend
+    restart: unless-stopped
+    ports:
+      - "${FRONTEND_PORT:-5173}:80"
+    depends_on:
+      movie-service:
+        condition: service_started
+    networks:
+      - movie-network
+
 volumes:
   movie_postgres_data:
     name: movie_postgres_data
