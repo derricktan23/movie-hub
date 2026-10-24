@@ -4,6 +4,7 @@ type Query {
     people: [Person!]!
     person(id: ID!): Person
     searchTmdbMovies(query: String!): [TmdbMovieSearchResult!]!
+    tmdbMovieCredits(tmdbId: ID!): TmdbCreditsResult!
 }
 
 type Mutation {
@@ -38,4 +39,20 @@ type TmdbMovieSearchResult {
     releaseYear: Int
     posterUrl: String
     overview: String!
+}
+
+"""
+Likely cast and key creators returned from TMDb /movie/{id}/credits.
+"""
+type TmdbCreditsResult {
+    cast: [TmdbCreditPerson!]!
+    crew: [TmdbCreditPerson!]!
+}
+
+type TmdbCreditPerson {
+    id: ID!
+    name: String!
+    role: String!
+    characterOrJob: String
+    profileUrl: String
 }

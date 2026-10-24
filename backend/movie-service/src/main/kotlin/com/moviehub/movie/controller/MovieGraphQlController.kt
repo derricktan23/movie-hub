@@ -5,6 +5,7 @@ import com.moviehub.movie.dto.PersonDto
 import com.moviehub.movie.grpc.PersonGrpcClient
 import com.moviehub.movie.service.MovieService
 import com.moviehub.movie.tmdb.TmdbClient
+import com.moviehub.movie.tmdb.TmdbCreditsResult
 import com.moviehub.movie.tmdb.TmdbSearchResult
 import kotlinx.coroutines.runBlocking
 import org.springframework.graphql.data.method.annotation.Argument
@@ -85,6 +86,13 @@ class MovieGraphQlController(
     @QueryMapping
     fun searchTmdbMovies(@Argument query: String): List<TmdbSearchResult> =
         tmdbClient.searchMovies(query)
+
+    /**
+     * Fetch likely cast and key creators for a selected TMDb movie.
+     */
+    @QueryMapping
+    fun tmdbMovieCredits(@Argument tmdbId: String): TmdbCreditsResult =
+        tmdbClient.getMovieCredits(tmdbId)
 
     /**
      * Query a single person by UUID via gRPC from ppl-service (BFF).
