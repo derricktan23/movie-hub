@@ -43,12 +43,17 @@ services:
     container_name: movie-ppl-service
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xmx384m -Xms128m"
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: ${POSTGRES_USER:-postgres}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgresPassword}
     ports:
       - "9090:9090"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     depends_on:
       postgres:
         condition: service_healthy
@@ -62,6 +67,7 @@ services:
     container_name: movie-movie-service
     restart: unless-stopped
     environment:
+      JAVA_TOOL_OPTIONS: "-XX:+TieredCompilation -XX:TieredStopAtLevel=1 -Xmx384m -Xms128m"
       DB_HOST: postgres
       DB_PORT: 5432
       DB_USER: ${POSTGRES_USER:-postgres}
@@ -70,6 +76,10 @@ services:
       PPL_SERVICE_PORT: 9090
     ports:
       - "8081:8081"
+    deploy:
+      resources:
+        limits:
+          memory: 512M
     depends_on:
       postgres:
         condition: service_healthy
