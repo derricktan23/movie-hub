@@ -25,3 +25,8 @@ grpc:
     ppl-service:
       address: 'static://${PPL_SERVICE_HOST:localhost}:${PPL_SERVICE_PORT:9090}'
       negotiation-type: plaintext
+
+tmdb:
+  base-url: https://api.themoviedb.org/3
+  image-base-url: https://image.tmdb.org/t/p/w500
+  read-access-token: ${TMDB_READ_ACCESS_TOKEN:}
