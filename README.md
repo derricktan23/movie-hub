@@ -135,7 +135,28 @@ docker compose down
 Open your browser and navigate to:
 - **URL**: [http://localhost:5173](http://localhost:5173)
 
-Browse movie catalogs, view cast details resolved across microservices, and search live TMDb data.
+> 📖 For local development with Hot Module Reload (HMR) and frontend architecture details, see the [Frontend Guide](frontend/README.md).
+
+#### Key Features & How to Use
+
+1. **Smart Movie Adding (Zero Manual Typing or Poster Uploads)**:
+   - Click the **"+ Add Movie"** button.
+   - Start typing any movie title (e.g., *"Inception"*, *"Oppenheimer"*, *"Dune"*).
+   - The app searches **The Movie Database (TMDb)** in real-time.
+   - Click any movie suggestion:
+     - **Title & Release Year**: Auto-populated immediately.
+     - **Movie Artwork / Poster**: Auto-filled with official high-res poster URLs from TMDb — **no manual file upload or image download required**.
+     - **Cast & Crew Auto-Linking**: Automatically retrieves key actors and directors from TMDb, letting you link them to your local database with 1-click.
+   - Click **Save Movie** to persist it to `movie_db`.
+
+2. **Instant Search & Filtering**:
+   - Use the top search bar to filter your movie catalog in real-time by **title**, **release year**, or **cast member name**.
+
+3. **Cross-Microservice Cast Resolution**:
+   - Each movie card displays its associated actors and directors, resolved seamlessly on-the-fly across microservices via high-performance gRPC.
+
+4. **People & Talent Registry**:
+   - Switch between **Movie Catalog** and **People Registry** tabs to view, search, and manage registered actors and directors.
 
 ---
 
