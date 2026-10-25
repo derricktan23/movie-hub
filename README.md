@@ -8,44 +8,9 @@ A microservices-based Movie Application built with Spring Boot (Kotlin), Svelte 
 
 The application is built using a modern microservices architecture coordinated inside an isolated Docker network (`movie-network`):
 
-```mermaid
-graph LR
-    subgraph Client ["Client (Browser)"]
-        SPA["<b>Svelte 5 SPA</b><br/>• Svelte 5 + Vite + TypeScript<br/>• Dev Server / UI: <code>:5173</code>"]
-    end
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/5a744da7-744c-4215-a604-a7a81b029311" />
 
-    subgraph DockerNet ["Docker Container Network (movie-network)"]
-        direction LR
 
-        subgraph BFF ["BFF Gateway"]
-            MS["<b>movie-service</b> (Spring Boot + Kotlin)<br/>• Exposes GraphQL API (<code>:8081</code>)<br/>• Orchestrates internal & external data<br/>• Movie business logic"]
-        end
-
-        subgraph InternalMicroservice ["Internal Microservice"]
-            PS["<b>ppl-service</b> (Spring Boot + Kotlin)<br/>• Manages people, talent & creators<br/>• Internal gRPC Server (<code>:9090</code>)<br/>• Accesses ppl_db"]
-        end
-
-        subgraph DB ["Database"]
-            PG[("<b>PostgreSQL 16</b> (<code>:5432</code>)<br/>• movie_db & ppl_db<br/>• Persistent volume")]
-        end
-
-        MS -->|"gRPC (ProtoBuf)<br/><code>:9090</code>"| PS
-        MS -->|"JDBC"| PG
-        PS -->|"JDBC"| PG
-    end
-
-    TMDB["<b>The Movie Database (TMDb)</b><br/>External REST API<br/>(Movies, people, images)"]
-
-    SPA -->|"GraphQL over HTTP<br/><code>:8081</code>"| MS
-    MS -->|"REST / HTTPS"| TMDB
-
-    style Client fill:#eef2ff,stroke:#6366f1,stroke-width:2px
-    style DockerNet fill:#f8fafc,stroke:#0284c7,stroke-width:2px,stroke-dasharray: 4 4
-    style BFF fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
-    style InternalMicroservice fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
-    style DB fill:#eff6ff,stroke:#2563eb,stroke-width:2px
-    style TMDB fill:#fef3c7,stroke:#d97706,stroke-width:2px
-```
 
 ### Architecture Breakdown
 1. **Frontend (Svelte 5 SPA)**:
