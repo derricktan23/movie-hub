@@ -4,7 +4,69 @@ A microservices-based Movie Application built with Spring Boot (Kotlin), Svelte 
 
 ---
 
-## 1. Database Architecture & Data Model
+## 1. System Architecture
+
+The application is built using a modern microservices architecture coordinated inside an isolated Docker network (`movie-network`):
+
+```mermaid
+graph LR
+    subgraph Client ["Client (Browser)"]
+        SPA["<b>Svelte 5 SPA</b><br/>• Svelte 5 + Vite + TypeScript<br/>• Dev Server / UI: <code>:5173</code>"]
+    end
+
+    subgraph DockerNet ["Docker Container Network (movie-network)"]
+        direction LR
+
+        subgraph BFF ["BFF Gateway"]
+            MS["<b>movie-service</b> (Spring Boot + Kotlin)<br/>• Exposes GraphQL API (<code>:8081</code>)<br/>• Orchestrates internal & external data<br/>• Movie business logic"]
+        end
+
+        subgraph InternalMicroservice ["Internal Microservice"]
+            PS["<b>ppl-service</b> (Spring Boot + Kotlin)<br/>• Manages people, talent & creators<br/>• Internal gRPC Server (<code>:9090</code>)<br/>• Accesses ppl_db"]
+        end
+
+        subgraph DB ["Database"]
+            PG[("<b>PostgreSQL 16</b> (<code>:5432</code>)<br/>• movie_db & ppl_db<br/>• Persistent volume")]
+        end
+
+        MS -->|"gRPC (ProtoBuf)<br/><code>:9090</code>"| PS
+        MS -->|"JDBC"| PG
+        PS -->|"JDBC"| PG
+    end
+
+    TMDB["<b>The Movie Database (TMDb)</b><br/>External REST API<br/>(Movies, people, images)"]
+
+    SPA -->|"GraphQL over HTTP<br/><code>:8081</code>"| MS
+    MS -->|"REST / HTTPS"| TMDB
+
+    style Client fill:#eef2ff,stroke:#6366f1,stroke-width:2px
+    style DockerNet fill:#f8fafc,stroke:#0284c7,stroke-width:2px,stroke-dasharray: 4 4
+    style BFF fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+    style InternalMicroservice fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
+    style DB fill:#eff6ff,stroke:#2563eb,stroke-width:2px
+    style TMDB fill:#fef3c7,stroke:#d97706,stroke-width:2px
+```
+
+### Architecture Breakdown
+1. **Frontend (Svelte 5 SPA)**:
+   - Built with **Svelte 5, Vite, and TypeScript** on port `5173`.
+   - Communicates exclusively with the backend via **GraphQL over HTTP** (`:8081`).
+2. **BFF Gateway (`movie-service`)**:
+   - Built with **Spring Boot & Kotlin** on port `8081`.
+   - Single public entry point that exposes the GraphQL API and handles movie business logic.
+   - Connects to **The Movie Database (TMDb)** via REST/HTTPS for live movie discovery and poster resolution.
+   - Communicates with `ppl-service` over fast internal **gRPC** (`:9090`).
+3. **Internal Microservice (`ppl-service`)**:
+   - Built with **Spring Boot & Kotlin** on port `9090`.
+   - Dedicated private service (no public HTTP port) managing cast, crew, and talent.
+   - Exposes gRPC endpoints with Protocol Buffers for sub-millisecond inter-service communication.
+4. **Database (PostgreSQL 16)**:
+   - Runs as a containerized database service on port `5432` with a persistent volume.
+   - Houses two isolated databases (`movie_db` and `ppl_db`) accessed via JDBC.
+
+---
+
+## 2. Database Architecture & Data Model
 
 The application follows the **Database-per-Service** pattern with two isolated PostgreSQL databases. Services maintain loose coupling with zero cross-database foreign keys.
 
@@ -48,7 +110,7 @@ Manage both databases using the built-in [Adminer](http://localhost:8080) web in
 
 ---
 
-## 2. Quick Start with Docker
+## 3. Quick Start with Docker
 
 Once you have [Docker](https://www.docker.com/) installed and running, spin up the entire system (frontend, microservices, database, and adminer) with one command:
 
@@ -67,7 +129,7 @@ docker compose down
 
 ---
 
-## 3. Accessing the Application
+## 4. Accessing the Application
 
 ### Frontend Web App
 Open your browser and navigate to:
@@ -104,7 +166,7 @@ query GetAllMoviesWithPeople {
 
 ---
 
-## 4. Service Summary & Ports
+## 5. Service Summary & Ports
 
 | Service | Protocol / Type | Port / URL | Description |
 |---|---|---|---|
