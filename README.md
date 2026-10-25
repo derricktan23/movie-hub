@@ -34,28 +34,7 @@ The application is built using a modern microservices architecture coordinated i
 ## 2. Database Architecture & Data Model
 
 The application follows the **Database-per-Service** pattern with two isolated PostgreSQL databases. Services maintain loose coupling with zero cross-database foreign keys.
-
-```mermaid
-graph LR
-    subgraph movie_db ["Database: movie_db (PostgreSQL 16) - Managed by movie-service"]
-        direction TB
-        M["<b>movies</b><br/>• <u>id</u>: UUID (PK)<br/>• title: VARCHAR(255)<br/>• release_year: INT<br/>• artwork_url: TEXT"]
-        MP["<b>movie_people</b><br/>• <u>movie_id</u>: UUID (FK)<br/>• <u>ppl_id</u>: UUID (PK)"]
-        M -->|"1-to-many<br/>(One movie has many people)"| MP
-    end
-
-    subgraph ppl_db ["Database: ppl_db (PostgreSQL 16) - Managed by ppl-service"]
-        direction TB
-        P["<b>people</b><br/>• <u>id</u>: UUID (PK)<br/>• name: VARCHAR(255)<br/>• role: VARCHAR(50)"]
-    end
-
-    MP -.->|"<b>Cross-Microservice ID Resolution</b><br/>(via gRPC Gateway Join)"| P
-
-    style movie_db fill:#f4f8ff,stroke:#2b6cb0,stroke-width:2px
-    style ppl_db fill:#f4f8ff,stroke:#2b6cb0,stroke-width:2px
-    style MP stroke:#dd6b20,stroke-width:2px
-    style P stroke:#38a169,stroke-width:2px
-```
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/0765ef5f-68f2-45b7-8bd0-345d9bc6c91f" />
 
 ### How Cross-Service Resolution Works
 1. **Isolated Data Stores**: 
