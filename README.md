@@ -8,44 +8,9 @@ A microservices-based Movie Application built with Spring Boot (Kotlin), Svelte 
 
 The application is built using a modern microservices architecture coordinated inside an isolated Docker network (`movie-network`):
 
-```mermaid
-graph LR
-    subgraph Client ["Client (Browser)"]
-        SPA["<b>Svelte 5 SPA</b><br/>• Svelte 5 + Vite + TypeScript<br/>• Dev Server / UI: <code>:5173</code>"]
-    end
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/5a744da7-744c-4215-a604-a7a81b029311" />
 
-    subgraph DockerNet ["Docker Container Network (movie-network)"]
-        direction LR
 
-        subgraph BFF ["BFF Gateway"]
-            MS["<b>movie-service</b> (Spring Boot + Kotlin)<br/>• Exposes GraphQL API (<code>:8081</code>)<br/>• Orchestrates internal & external data<br/>• Movie business logic"]
-        end
-
-        subgraph InternalMicroservice ["Internal Microservice"]
-            PS["<b>ppl-service</b> (Spring Boot + Kotlin)<br/>• Manages people, talent & creators<br/>• Internal gRPC Server (<code>:9090</code>)<br/>• Accesses ppl_db"]
-        end
-
-        subgraph DB ["Database"]
-            PG[("<b>PostgreSQL 16</b> (<code>:5432</code>)<br/>• movie_db & ppl_db<br/>• Persistent volume")]
-        end
-
-        MS -->|"gRPC (ProtoBuf)<br/><code>:9090</code>"| PS
-        MS -->|"JDBC"| PG
-        PS -->|"JDBC"| PG
-    end
-
-    TMDB["<b>The Movie Database (TMDb)</b><br/>External REST API<br/>(Movies, people, images)"]
-
-    SPA -->|"GraphQL over HTTP<br/><code>:8081</code>"| MS
-    MS -->|"REST / HTTPS"| TMDB
-
-    style Client fill:#eef2ff,stroke:#6366f1,stroke-width:2px
-    style DockerNet fill:#f8fafc,stroke:#0284c7,stroke-width:2px,stroke-dasharray: 4 4
-    style BFF fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
-    style InternalMicroservice fill:#f0fdf4,stroke:#16a34a,stroke-width:2px
-    style DB fill:#eff6ff,stroke:#2563eb,stroke-width:2px
-    style TMDB fill:#fef3c7,stroke:#d97706,stroke-width:2px
-```
 
 ### Architecture Breakdown
 1. **Frontend (Svelte 5 SPA)**:
@@ -69,28 +34,7 @@ graph LR
 ## 2. Database Architecture & Data Model
 
 The application follows the **Database-per-Service** pattern with two isolated PostgreSQL databases. Services maintain loose coupling with zero cross-database foreign keys.
-
-```mermaid
-graph LR
-    subgraph movie_db ["Database: movie_db (PostgreSQL 16) - Managed by movie-service"]
-        direction TB
-        M["<b>movies</b><br/>• <u>id</u>: UUID (PK)<br/>• title: VARCHAR(255)<br/>• release_year: INT<br/>• artwork_url: TEXT"]
-        MP["<b>movie_people</b><br/>• <u>movie_id</u>: UUID (FK)<br/>• <u>ppl_id</u>: UUID (PK)"]
-        M -->|"1-to-many<br/>(One movie has many people)"| MP
-    end
-
-    subgraph ppl_db ["Database: ppl_db (PostgreSQL 16) - Managed by ppl-service"]
-        direction TB
-        P["<b>people</b><br/>• <u>id</u>: UUID (PK)<br/>• name: VARCHAR(255)<br/>• role: VARCHAR(50)"]
-    end
-
-    MP -.->|"<b>Cross-Microservice ID Resolution</b><br/>(via gRPC Gateway Join)"| P
-
-    style movie_db fill:#f4f8ff,stroke:#2b6cb0,stroke-width:2px
-    style ppl_db fill:#f4f8ff,stroke:#2b6cb0,stroke-width:2px
-    style MP stroke:#dd6b20,stroke-width:2px
-    style P stroke:#38a169,stroke-width:2px
-```
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/0765ef5f-68f2-45b7-8bd0-345d9bc6c91f" />
 
 ### How Cross-Service Resolution Works
 1. **Isolated Data Stores**: 
