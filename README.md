@@ -1,64 +1,115 @@
-# Movie App
+# Movie Hub
 
-A microservices-based Movie Hub.
-
-## Architecture
-
-- **Frontend**: Svelte + TypeScript (communicating via GraphQL)
-- **Backend**: Spring Boot in Kotlin (`movie-service` and `ppl-service`)
-- **Inter-service Communication**: gRPC
-- **Databases**: PostgreSQL 16 (Database-per-service: `movie_db` and `ppl_db`)
-- **Database Management**: Adminer
+A microservices-based Movie Application built with Spring Boot (Kotlin), Svelte 5, gRPC, and PostgreSQL.
 
 ---
 
-## Getting Started
+## 1. Database Architecture & Data Model
 
-### 1. Start Infrastructure
+The application follows the **Database-per-Service** pattern with two isolated PostgreSQL databases. Services maintain loose coupling with zero cross-database foreign keys.
 
+```mermaid
+graph LR
+    subgraph movie_db ["Database: movie_db (PostgreSQL 16) - Managed by movie-service"]
+        direction TB
+        M["<b>movies</b><br/>• <u>id</u>: UUID (PK)<br/>• title: VARCHAR(255)<br/>• release_year: INT<br/>• artwork_url: TEXT"]
+        MP["<b>movie_people</b><br/>• <u>movie_id</u>: UUID (FK)<br/>• <u>ppl_id</u>: UUID (PK)"]
+        M -->|"1-to-many<br/>(One movie has many people)"| MP
+    end
+
+    subgraph ppl_db ["Database: ppl_db (PostgreSQL 16) - Managed by ppl-service"]
+        direction TB
+        P["<b>people</b><br/>• <u>id</u>: UUID (PK)<br/>• name: VARCHAR(255)<br/>• role: VARCHAR(50)"]
+    end
+
+    MP -.->|"<b>Cross-Microservice ID Resolution</b><br/>(via gRPC Gateway Join)"| P
+
+    style movie_db fill:#f4f8ff,stroke:#2b6cb0,stroke-width:2px
+    style ppl_db fill:#f4f8ff,stroke:#2b6cb0,stroke-width:2px
+    style MP stroke:#dd6b20,stroke-width:2px
+    style P stroke:#38a169,stroke-width:2px
 ```
- rom within the `docker/` directory:
-```bash
-cd docker
-docker compose up -d
-```
 
-To stop the containers:
-```bash
-docker compose -f docker/docker-compose.yml down
-docker compose down
-```
+### How Cross-Service Resolution Works
+1. **Isolated Data Stores**: 
+   - `movie_db` stores movies and associative records in `movie_people (movie_id, ppl_id)`.
+   - `ppl_db` independently stores actors and directors in `people (id, name, role)`.
+2. **No Database-Level Foreign Key**: `movie_people.ppl_id` stores UUIDs referencing `people.id`, but does **not** enforce a cross-database foreign key constraint.
+3. **gRPC Join at Application Level**: When a client queries a movie with its cast or crew, `movie-service` fetches the movie, collects the associated `ppl_id` list, and calls `ppl-service` via high-performance internal **gRPC** (`GetPeopleByIds`) to resolve names and roles on-the-fly.
 
-### 2. Access Adminer
-
-Open [http://localhost:8080](http://localhost:8080) in your browser and log in:
-
+### Accessing Databases via Adminer
+Manage both databases using the built-in [Adminer](http://localhost:8080) web interface:
+- **URL**: [http://localhost:8080](http://localhost:8080)
 - **System**: `PostgreSQL`
 - **Server**: `postgres`
 - **Username**: `postgres`
-- **Password**: `postgresPassword` *(or the value configured in `docker/.env`)*
-- **Database**: `movie_db` or `ppl_db`
+- **Password**: `postgresPassword`
+- **Database**: `movie_db` *(movies)* or `ppl_db` *(people/cast)*
 
 ---
 
-### 3. Run Frontend (Svelte + TypeScript)
+## 2. Quick Start with Docker
+
+Once you have [Docker](https://www.docker.com/) installed and running, spin up the entire system (frontend, microservices, database, and adminer) with one command:
 
 ```bash
-cd frontend
-npm install
-npm run dev
+cd docker
+docker compose up -d --build
 ```
 
-Open [http://localhost:5173](http://localhost:5173) to access the Movie Hub dashboard.
+To stop all services:
+```bash
+cd docker
+docker compose down
+```
+
+> 📖 For detailed Docker commands, logging, and environment variable configurations, see the [Docker Guide](docker/README.md).
 
 ---
 
-## Service Endpoints & Ports
+## 3. Accessing the Application
 
-| Service | Technology | Port / Endpoint | Description |
+### Frontend Web App
+Open your browser and navigate to:
+- **URL**: [http://localhost:5173](http://localhost:5173)
+
+Browse movie catalogs, view cast details resolved across microservices, and search live TMDb data.
+
+---
+
+### Backend API via Postman (GraphQL)
+> **Key Note**: Only `movie-service` exposes an external GraphQL HTTP API (`:8081`). `ppl-service` is an internal private microservice that communicates exclusively over gRPC (`:9090`).
+
+- **Endpoint**: `POST http://localhost:8081/graphql`
+- **Postman Collection**: Import the ready-to-use file [`postman/Movie_Hub_movie-service.postman_collection.json`](postman/Movie_Hub_movie-service.postman_collection.json) into Postman.
+
+#### Sample GraphQL Query
+In Postman, create a `POST` request to `http://localhost:8081/graphql` with body:
+
+```graphql
+query GetAllMoviesWithPeople {
+  movies {
+    id
+    title
+    releaseYear
+    artworkUrl
+    people {
+      id
+      name
+      role
+    }
+  }
+}
+```
+
+---
+
+## 4. Service Summary & Ports
+
+| Service | Protocol / Type | Port / URL | Description |
 |---|---|---|---|
-| **Frontend** | Svelte 5 + TypeScript + Vite | `http://localhost:5173` | Enterprise UI Dashboard |
-| **Movie Service (BFF)** | Spring Boot (Kotlin) | `http://localhost:8081/graphql` | BFF Gateway: Movies & People GraphQL API + gRPC Client |
-| **People Service** | Spring Boot (Kotlin) | `localhost:9090` (internal) | Private Service: gRPC Server only (no HTTP) |
-| **Adminer** | Adminer Web DB UI | `http://localhost:8080` | PostgreSQL Database Manager |
-| **PostgreSQL** | PostgreSQL 16 | `localhost:5432` | `movie_db` & `ppl_db` |
+| **Frontend** | HTTP | `http://localhost:5173` | Svelte 5 UI Dashboard |
+| **Movie Service** | HTTP / GraphQL | `http://localhost:8081/graphql` | Public Gateway & BFF (GraphQL entry point) |
+| **People Service** | gRPC | `localhost:9090` | Internal gRPC service (called by Movie Service) |
+| **Adminer** | HTTP | `http://localhost:8080` | Web UI for PostgreSQL databases |
+| **PostgreSQL** | TCP | `localhost:5432` | Databases: `movie_db` and `ppl_db` |
